@@ -5,7 +5,7 @@
 //#include <hardware/BLEMIDI_nRF52.h>
 //#include <hardware/BLEMIDI_ArduinoBLE.h>
 
-BLEMIDI_CREATE_INSTANCE("tomikMidi", MIDI)
+BLEMIDI_CREATE_INSTANCE("ble-midi-box", MIDI)
 
 #ifndef LED_BUILTIN
 #define LED_BUILTIN 2
