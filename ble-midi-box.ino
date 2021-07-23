@@ -12,13 +12,15 @@ BLEMIDI_CREATE_INSTANCE("ble-midi-box", MIDI)
 #endif
 
 bool isConnected = false;
-const int BT_PAIR_DELAY = 300; //ms
-
-bool state;
-bool prevState;
 
 const int BT_LED = LED_BUILTIN;
-const int buttonPin = 4;
+const int BT_PAIR_DELAY = 300; //ms
+
+const int pedalPin = 4;
+
+bool pedalState;
+bool prevPedalState;
+
 
 // -----------------------------------------------------------------------------
 //
@@ -28,10 +30,9 @@ void setup()
   MIDI.begin();
 
   pinMode(BT_LED, OUTPUT);
-  pinMode(buttonPin, INPUT);
-
-
   digitalWrite(BT_LED, LOW);
+
+  pinMode(pedalPin, INPUT);
 
   BLEMIDI.setHandleConnected(OnConnected);
   BLEMIDI.setHandleDisconnected(OnDisconnected);
@@ -49,9 +50,9 @@ void loop()
 
   if (isConnected)
   {
-    state = digitalRead(buttonPin) == HIGH;
-    if (state != prevState) {
-      if (state == true)
+    pedalState = digitalRead(pedalPin) == HIGH;
+    if (pedalState != prevPedalState) {
+      if (pedalState == true)
       {
         MIDI.sendControlChange(64, 127, 1);
       }
@@ -60,7 +61,7 @@ void loop()
         MIDI.sendControlChange(64, 0, 1);
       }
     }
-    prevState = state;
+    prevPedalState = pedalState;
     delay(4);
   }
   else
