@@ -5,22 +5,25 @@
 //#include <hardware/BLEMIDI_nRF52.h>
 //#include <hardware/BLEMIDI_ArduinoBLE.h>
 
-BLEMIDI_CREATE_INSTANCE("ble-midi-box", MIDI)
-
 #ifndef LED_BUILTIN
 #define LED_BUILTIN 2
 #endif
 
-bool isConnected = false;
+
+const int LOOP_DELAY = 4; //ms
 
 const int BT_LED = LED_BUILTIN;
 const int BT_PAIR_DELAY = 300; //ms
 
-const int pedalPin = 4;
-
+const int PEDAL_PIN = 4;
+const int LED_PEDAL = 5;
 bool pedalState;
 bool prevPedalState;
 
+bool isConnectedBT = false;
+
+const byte MIDI_CH = 1;
+BLEMIDI_CREATE_INSTANCE("ble-midi-box", MIDI)
 
 // -----------------------------------------------------------------------------
 //
@@ -32,13 +35,12 @@ void setup()
   pinMode(BT_LED, OUTPUT);
   digitalWrite(BT_LED, LOW);
 
-  pinMode(pedalPin, INPUT);
+  pinMode(PEDAL_PIN, INPUT);
+  pinMode(LED_PEDAL, OUTPUT);
+  digitalWrite(LED_PEDAL, LOW);
 
   BLEMIDI.setHandleConnected(OnConnected);
   BLEMIDI.setHandleDisconnected(OnDisconnected);
-
-  MIDI.setHandleNoteOn(OnNoteOn);
-  MIDI.setHandleNoteOff(OnNoteOff);
 }
 
 // -----------------------------------------------------------------------------
@@ -48,28 +50,43 @@ void loop()
 {
   MIDI.read();
 
-  if (isConnected)
+  if (isConnectedBT)
   {
-    pedalState = digitalRead(pedalPin) == HIGH;
-    if (pedalState != prevPedalState) {
-      if (pedalState == true)
-      {
-        MIDI.sendControlChange(64, 127, 1);
-      }
-      else
-      {
-        MIDI.sendControlChange(64, 0, 1);
-      }
+    pedalState = isPedalActive();
+    if (pedalState != prevPedalState) 
+    {
+      setPedal(pedalState, MIDI_CH);
+      prevPedalState = pedalState;
     }
-    prevPedalState = pedalState;
-    delay(4);
+    
+    delay(LOOP_DELAY);
   }
   else
   {
-    digitalWrite(BT_LED, LOW);
-    delay(BT_PAIR_DELAY);
-    digitalWrite(BT_LED, HIGH);
-    delay(BT_PAIR_DELAY);
+    blinkLED(BT_LED, BT_PAIR_DELAY);
+  }
+}
+
+// ====================================================================================
+
+void blinkLED(int ledPin, int blinkDelay) {
+  digitalWrite(ledPin, LOW);
+  delay(blinkDelay);
+  digitalWrite(ledPin, HIGH);
+  delay(blinkDelay);
+}
+
+bool isPedalActive() {
+  return digitalRead(PEDAL_PIN) == HIGH;
+}
+
+void setPedal(bool active, byte midiChannel) {
+  if (active) {
+    MIDI.sendControlChange(64, 127, midiChannel);
+    digitalWrite(LED_PEDAL, HIGH);
+  } else {
+    MIDI.sendControlChange(64, 0, midiChannel);
+    digitalWrite(LED_PEDAL, LOW);
   }
 }
 
@@ -81,26 +98,16 @@ void loop()
 // Device connected
 // -----------------------------------------------------------------------------
 void OnConnected() {
-  isConnected = true;
+  isConnectedBT = true;
   digitalWrite(BT_LED, HIGH);
+
+  setPedal(isPedalActive(), MIDI_CH);
 }
 
 // -----------------------------------------------------------------------------
 // Device disconnected
 // -----------------------------------------------------------------------------
 void OnDisconnected() {
-  isConnected = false;
+  isConnectedBT = false;
   digitalWrite(BT_LED, LOW);
-}
-
-// -----------------------------------------------------------------------------
-// Received note on
-// -----------------------------------------------------------------------------
-void OnNoteOn(byte channel, byte note, byte velocity) {
-}
-
-// -----------------------------------------------------------------------------
-// Received note off
-// -----------------------------------------------------------------------------
-void OnNoteOff(byte channel, byte note, byte velocity) {
 }
