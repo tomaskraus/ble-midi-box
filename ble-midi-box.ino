@@ -21,6 +21,7 @@ bool startLoopFlag;
 // sustain pedal ---------------------------
 const int PEDAL_PIN = 4;
 const int LED_PEDAL = 5;
+int pedal_value_0;  //"value read from pin" if pedal is not pressed - read dynamically in the setup phase
 
 typedef enum {
   PEDAL_RESET = -1,
@@ -88,6 +89,7 @@ void loop()
   else
   {
     blinkLED(BT_LED, BT_PAIR_DELAY);
+    pedal_value_0 = digitalRead(PEDAL_PIN);  //read the pedal-off value from the current pedal input
   }
 }
 
@@ -101,9 +103,9 @@ void blinkLED(int ledPin, int blinkDelay) {
 }
 
 pedalStateEnum readPedalState() {
-  return (digitalRead(PEDAL_PIN) == HIGH)
-         ? PEDAL_ACTIVE
-         : PEDAL_NOT_ACTIVE
+  return (digitalRead(PEDAL_PIN) == pedal_value_0)
+         ? PEDAL_NOT_ACTIVE
+         : PEDAL_ACTIVE
          ;
 }
 
