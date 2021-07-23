@@ -76,10 +76,10 @@ void loop()
       startLoopFlag = false;
     }
 
-    pedalState = toPedalState(isPedalActive());
+    pedalState = readPedalState();
     if (pedalState != prevPedalState)
     {
-      sendPedalMidi(pedalStateToBool(pedalState), MIDI_CH);
+      sendPedalStateMIDI(pedalState, MIDI_CH);
       prevPedalState = pedalState;
     }
 
@@ -100,23 +100,15 @@ void blinkLED(int ledPin, int blinkDelay) {
   delay(blinkDelay);
 }
 
-bool isPedalActive() {
-  return digitalRead(PEDAL_PIN) == HIGH;
-}
-
-pedalStateEnum toPedalState(bool state) {
-  return state
+pedalStateEnum readPedalState() {
+  return (digitalRead(PEDAL_PIN) == HIGH)
          ? PEDAL_ACTIVE
          : PEDAL_NOT_ACTIVE
          ;
 }
 
-boolean pedalStateToBool(pedalStateEnum pState) {
-  return pState == PEDAL_ACTIVE;
-}
-
-void sendPedalMidi(bool active, byte midiChannel) {
-  if (active) {
+void sendPedalStateMIDI(pedalStateEnum pState, byte midiChannel) {
+  if (pState == PEDAL_ACTIVE) {
     MIDI.sendControlChange(64, 127, midiChannel);
     digitalWrite(LED_PEDAL, HIGH);
   } else {
