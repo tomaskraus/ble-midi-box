@@ -1,6 +1,6 @@
-# BLE-MIDI-Box
+# BLE-sustain-pedal
 
-Bluetooth MIDI controller sw and hw, for adding standard features missing on some bluetooth keyboard controllers.
+Bluetooth MIDI sustain pedal device, any sustain pedal with 6.5mm jack can plug into.
 
 ## Why to use
 
@@ -11,9 +11,9 @@ Some exceptional bluetooth MIDI keyboard controllers, such as:
 
 lack dedicated sustain pedal port.
 
-BLE-MIDI-Box solves this issue by sending its own sustain pedal MIDI message via separate bluetooth connection. 
+BLE-sustain-pedal solves this issue by sending its own sustain pedal MIDI message via separate bluetooth connection. 
 
-BLE-MIDI-Box works with most sustain pedals with 6.5mm jack connector.
+BLE-sustain-pedal works with most sustain pedals with 6.5mm jack connector.
 
 ## How it works
 
@@ -23,13 +23,14 @@ BLE-MIDI-Box works with most sustain pedals with 6.5mm jack connector.
 
 ### Sustain pedal
 
+- pedal polarity auto detection
 - only switch mode support
-- polarity auto detection
 
 __Note__: While BT pairing is in progress, be sure the sustain pedal is both attached and not pressed, so the pedal polarity is recognized properly.
 
 ## Real device picture
-
+![device picture](./docs/pics/real-image.jpg)
+## Inside the box
 ![device picture](./docs/pics/real-scheme.jpg)
 ## Hardware list
 
