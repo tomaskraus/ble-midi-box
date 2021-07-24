@@ -13,6 +13,8 @@ lack dedicated sustain pedal port.
 
 BLE-MIDI-Box solves this issue by sending its own sustain pedal MIDI message via separate bluetooth connection. 
 
+BLE-MIDI-Box works with most sustain pedals with 6.5mm jack connector.
+
 ## How it works
 
 ![setup](./docs/pics/setup.jpg)
