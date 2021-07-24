@@ -42,7 +42,7 @@ const byte MIDI_CH = 1; //MIDI output channel
 // ----------------------------------------------------------------------------
 
 
-BLEMIDI_CREATE_INSTANCE("ble-midi-box", MIDI)
+BLEMIDI_CREATE_INSTANCE("ble-sustain-pedal", MIDI)
 
 // -----------------------------------------------------------------------------
 //
